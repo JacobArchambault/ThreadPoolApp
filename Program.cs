@@ -1,41 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-
+﻿using System.Threading;
+using static System.Console;
+using static System.Threading.Thread;
+using static System.Threading.ThreadPool;
 namespace ThreadPoolApp
 {
     public class Printer
     {
-        private object lockToken = new object();
+        private readonly object lockToken = new object();
 
         public void PrintNumbers()
         {
             lock (lockToken)
             {
                 // Display Thread info.
-                Console.WriteLine("-> {0} is executing PrintNumbers()",
-                  Thread.CurrentThread.ManagedThreadId);
+                WriteLine($"-> {CurrentThread.ManagedThreadId} is executing PrintNumbers()");
 
                 // Print out numbers.
-                Console.Write("Your numbers: ");
+                Write("Your numbers: ");
                 for (int i = 0; i < 10; i++)
                 {
-                    Console.Write("{0}, ", i);
-                    Thread.Sleep(1000);
+                    Write($"{i}, ");
+                    Sleep(1000);
                 }
-                Console.WriteLine();
+                WriteLine();
             }
         }
     }
 
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Console.WriteLine("***** Fun with the CLR Thread Pool *****\n");
-
-            Console.WriteLine("Main thread started. ThreadID = {0}", Thread.CurrentThread.ManagedThreadId);
+            WriteLine("***** Fun with the CLR Thread Pool *****\n");
+            WriteLine($"Main thread started. ThreadID = {CurrentThread.ManagedThreadId}");
 
             Printer p = new Printer();
 
@@ -44,10 +41,10 @@ namespace ThreadPoolApp
             // Queue the method ten times.
             for (int i = 0; i < 10; i++)
             {
-                ThreadPool.QueueUserWorkItem(workItem, p);
+                QueueUserWorkItem(workItem, p);
             }
-            Console.WriteLine("All tasks queued");
-            Console.ReadLine();
+            WriteLine("All tasks queued");
+            ReadLine();
         }
         static void PrintTheNumbers(object state)
         {
